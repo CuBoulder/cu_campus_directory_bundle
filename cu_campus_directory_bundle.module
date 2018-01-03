@@ -1,0 +1,152 @@
+<?php
+/**
+ * @file
+ * Code for the CU Campus Directory feature.
+ */
+
+include_once 'cu_campus_directory_bundle.features.inc';
+
+
+function cu_campus_directory_bundle_preprocess_node(&$vars) {
+  //dpm($vars);
+  if ($vars['type'] == 'directory_listing1' && $vars['view_mode'] == 'full') {
+
+    $children = cu_campus_directory_bundle_get_children($vars['nid']);
+    //dpm($decendants);
+    if (!empty($children)) {
+      $vars['content']['items']['#markup'] = theme('item_list', array('items' => $children));
+      $vars['content']['items']['#weight'] = 1000;
+    }
+
+
+    $parent = cu_campus_directory_bundle_get_parent($vars['nid']);
+    if ($parent) {
+      $vars['content']['parent']['#markup'] = 'Part of: ' . $parent;
+    }
+
+
+  }
+
+}
+
+function cu_campus_directory_bundle_get_children($nid) {
+  // Get menu link ID.
+  $path = 'node/' . $nid;
+  $query = db_select('menu_links', 'ml');
+  $query->condition('ml.link_path', $path, '=');
+  $query->fields('ml', array('mlid'));
+  $menu_item = $query->execute()->fetchCol();
+  $mlid = current($menu_item);
+
+
+
+
+
+  // Get node ids of direct children
+  $query = db_select('menu_links', 'ml');
+  $query->condition('ml.plid', $mlid, '=');
+  $query->fields('ml', array('link_path'));
+  $children = $query->execute()->fetchCol();
+
+  $nodes = array();
+  foreach ($children as $child) {
+    $nid = substr($child,5);
+
+    $node = node_load($nid);
+    $node_view = node_view($node, 'teaser');
+    $nodes[$nid]['data'] = l($node->title, 'node/' . $node->nid);
+  }
+  return $nodes;
+}
+
+
+function cu_campus_directory_bundle_get_parent($nid) {
+  // Get menu link ID.
+  $path = 'node/' . $nid;
+  $query = db_select('menu_links', 'ml');
+  $query->condition('ml.link_path', $path, '=');
+  $query->fields('ml', array('plid'));
+  $menu_item = $query->execute()->fetchCol();
+  $plid = current($menu_item);
+  if ($plid) {
+    // Get node ids of direct children
+    $query = db_select('menu_links', 'ml');
+    $query->condition('ml.mlid', $plid, '=');
+    $query->fields('ml', array('link_path', 'link_title'));
+    $parent = $query->execute()->fetchAll();
+
+    $parent = current($parent);
+
+    return l($parent->link_title, $parent->link_path);
+  }
+  else {
+    return NULL;
+  }
+}
+
+function cu_campus_directory_bundle_contact_types() {
+  $options = array(
+    'website' => 'Website',
+    'email' => 'E-mail',
+    'phone' => 'Phone'
+  );
+  return $options;
+}
+
+function cu_campus_directory_bundle_unit_types() {
+  $options = array();
+  return $options;
+}
+
+function cu_campus_directory_bundle_node_update($node) {
+  if ($node->type == 'directory_listing') {
+    dpm('this is a directory listing');
+    dpm($node);
+    $mlid = $node->menu['mlid'];
+  }
+}
+
+function cu_campus_directory_bundle_secure_permissions($role) {
+  // INSERT PERMISSIONS FOR THIS BUNDLE
+  $permissions = array(
+    'administrator' => array(
+      'create directory_listing content',
+      'delete any directory_listing content',
+      'delete own directory_listing content',
+      'edit any directory_listing content',
+      'edit own directory_listing content',
+    ),
+    'anonymous user' => array(
+    ),
+    'authenticated user' => array(
+    ),
+    'content_editor' => array(
+
+    ),
+    'developer' => array(
+      'create directory_listing content',
+      'delete any directory_listing content',
+      'delete own directory_listing content',
+      'edit any directory_listing content',
+      'edit own directory_listing content',
+      'create directory_group content',
+      'delete any directory_group content',
+      'delete own directory_group content',
+      'edit any directory_group content',
+      'edit own directory_group content',
+    ),
+    'edit_my_content' => array(
+    ),
+    'site_owner' => array(
+      'create directory_listing content',
+      'delete any directory_listing content',
+      'delete own directory_listing content',
+      'edit any directory_listing content',
+      'edit own directory_listing content',
+    ),
+  );
+
+  if (isset($permissions[$role])) {
+    return $permissions[$role];
+  }
+}
