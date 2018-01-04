@@ -46,7 +46,7 @@
       <?php print render($content['field_directory_contact']); ?>
     </ul>
   </div>
-<?pgp endif; ?>
+<?php endif; ?>
 
 
 <?php if (!empty($content['members'])): ?>
