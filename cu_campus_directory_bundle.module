@@ -136,6 +136,7 @@ function cu_campus_directory_bundle_secure_permissions($role) {
       'delete own directory_listing content',
       'edit any directory_listing content',
       'edit own directory_listing content',
+      'edit group hierarchy',
     ),
     'anonymous user' => array(
     ),
@@ -150,6 +151,7 @@ function cu_campus_directory_bundle_secure_permissions($role) {
       'delete own directory_listing content',
       'edit any directory_listing content',
       'edit own directory_listing content',
+      'edit group hierarchy',
     ),
     'edit_my_content' => array(
     ),
@@ -201,4 +203,48 @@ function cu_campus_directory_bundle_get_top_group($id) {
     $id = cu_campus_directory_bundle_get_top_group($id);
   }
   return $id;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function cu_campus_directory_bundle_permission() {
+  return array(
+    'edit group hierarchy' => array(
+      'title' => t('Edit Group Hierarchy'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_alter.
+ *
+ * Hide group fields if you don't have access.
+ * Alter group fields to be in a fieldset.
+ */
+function cu_campus_directory_bundle_form_node_form_alter(&$form, &$form_state, $form_id) {
+  // do stuff
+  if ($form['#node']->type == 'directory_listing') {
+    $hide_group_fields = array(
+      'group_group',
+      'og_group_ref',
+      'og_user_inheritance',
+      'og_user_permission_inheritance',
+    );
+    if (!user_access('edit group hierarchy')) {
+      foreach ($hide_group_fields as $field) {
+        $form[$field]['#access'] = FALSE;
+      }
+    }
+    else {
+      $form['directory_group'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Group Settings',
+      );
+      foreach ($hide_group_fields as $field) {
+        $form['directory_group'][$field] = $form[$field];
+        unset($form[$field]);
+      }
+    }
+  }
 }
