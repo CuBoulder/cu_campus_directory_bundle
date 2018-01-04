@@ -6,44 +6,50 @@
 
 include_once 'cu_campus_directory_bundle.features.inc';
 
-
+/**
+ * Implements module_preprocess_node.
+ */
 function cu_campus_directory_bundle_preprocess_node(&$vars) {
   if ($vars['type'] == 'directory_listing' && $vars['view_mode'] == 'full') {
 
+    // Get the group the node is part of.
     $node = $vars['node'];
-
-
-
     $groups = og_get_entity_groups('node', $node);
+    // Add a "part of" link.
     if ($groups) {
-
       $id = current($groups['node']);
       $group = og_membership_load($id);
       $parent_nid = $group->id;
       $parent_node = node_load($parent_nid);
-
       $vars['content']['parent']['#markup'] = 'Part of ' . l($parent_node->title, 'node/' . $parent_nid, array('html' => TRUE));
     }
 
+    // Get members of this group.
     $members = cu_campus_directory_bundle_get_members($node->nid);
     if (!empty($members)) {
       $vars['content']['members']['#markup'] = theme('item_list', array('items' => $members));
       $vars['content']['members']['#weight'] = 1000;
     }
-
-
-    $top = cu_campus_directory_bundle_get_top_group($node->nid);
   }
-
 }
 
+/**
+ * Get direct members of a OG group.
+ */
 function cu_campus_directory_bundle_get_members($nid) {
+  // Get direct members ids of group.
   $query = db_select('og_membership', 'ogm');
   $query->condition('ogm.gid', $nid, '=');
   $query->condition('ogm.entity_type', 'node', '=');
   $query->fields('ogm', array('etid'));
+
+  // Join node table so we can order alphabetically.
+  $query->join('node', 'n', 'n.nid = ogm.etid');
+  $query->fields('n', array('title'));
+  $query->orderBy('title', 'ASC');
   $members = $query->execute()->fetchCol();
 
+  // Render nodes.
   $nodes = array();
   foreach ($members as $nid) {
     $node = node_load($nid);
@@ -53,6 +59,9 @@ function cu_campus_directory_bundle_get_members($nid) {
   return $nodes;
 }
 
+/**
+ * Options for additional contact types.
+ */
 function cu_campus_directory_bundle_contact_types() {
   $options = array(
     'website' => 'Website',
@@ -62,11 +71,19 @@ function cu_campus_directory_bundle_contact_types() {
   return $options;
 }
 
+/**
+ * Options for directory listing types.
+ */
 function cu_campus_directory_bundle_unit_types() {
   $options = array();
   return $options;
 }
 
+/**
+ * Implements hook_node_update.
+ *
+ * Update url alias if a group is not a top level group.
+ */
 function cu_campus_directory_bundle_node_update($node) {
   if ($node->type == 'directory_listing') {
     $nid = $node->nid;
@@ -85,6 +102,11 @@ function cu_campus_directory_bundle_node_update($node) {
   }
 }
 
+/**
+ * Implements hook_node_insert.
+ *
+ * Update url alias if a group is not a top level group.
+ */
 function cu_campus_directory_bundle_node_insert($node) {
   if ($node->type == 'directory_listing') {
     $nid = $node->nid;
@@ -103,8 +125,10 @@ function cu_campus_directory_bundle_node_insert($node) {
   }
 }
 
+/**
+ * Implements hook_secure_permissions.
+ */
 function cu_campus_directory_bundle_secure_permissions($role) {
-  // INSERT PERMISSIONS FOR THIS BUNDLE
   $permissions = array(
     'administrator' => array(
       'create directory_listing content',
@@ -163,6 +187,9 @@ function cu_campus_directory_bundle_theme_registry_alter(&$theme_registry) {
   }
 }
 
+/**
+ * Get top most group from a given group id.
+ */
 function cu_campus_directory_bundle_get_top_group($id) {
   $query = db_select('og_membership', 'ogm');
   $query->condition('ogm.etid', $id, '=');
@@ -172,9 +199,6 @@ function cu_campus_directory_bundle_get_top_group($id) {
   if (!empty($groups)) {
     $id = current($groups);
     $id = cu_campus_directory_bundle_get_top_group($id);
-    if (!empty($groups)) {
-      //$id = current($groups);
-    }
   }
   return $id;
 }
