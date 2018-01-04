@@ -118,6 +118,7 @@ function cu_campus_directory_bundle_field_group_info() {
       0 => 'field_directory_building_name',
       1 => 'field_directory_address_2',
       2 => 'field_directory_address_3',
+      3 => 'field_directory_map_url',
     ),
     'format_type' => 'htab',
     'format_settings' => array(

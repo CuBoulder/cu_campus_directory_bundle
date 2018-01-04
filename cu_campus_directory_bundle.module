@@ -8,80 +8,49 @@ include_once 'cu_campus_directory_bundle.features.inc';
 
 
 function cu_campus_directory_bundle_preprocess_node(&$vars) {
-  //dpm($vars);
-  if ($vars['type'] == 'directory_listing1' && $vars['view_mode'] == 'full') {
+  if ($vars['type'] == 'directory_listing' && $vars['view_mode'] == 'full') {
 
-    $children = cu_campus_directory_bundle_get_children($vars['nid']);
-    //dpm($decendants);
-    if (!empty($children)) {
-      $vars['content']['items']['#markup'] = theme('item_list', array('items' => $children));
-      $vars['content']['items']['#weight'] = 1000;
+    $node = $vars['node'];
+
+
+
+    $groups = og_get_entity_groups('node', $node);
+    if ($groups) {
+
+      $id = current($groups['node']);
+      $group = og_membership_load($id);
+      $parent_nid = $group->id;
+      $parent_node = node_load($parent_nid);
+
+      $vars['content']['parent']['#markup'] = 'Part of ' . l($parent_node->title, 'node/' . $parent_nid, array('html' => TRUE));
+    }
+
+    $members = cu_campus_directory_bundle_get_members($node->nid);
+    if (!empty($members)) {
+      $vars['content']['members']['#markup'] = theme('item_list', array('items' => $members));
+      $vars['content']['members']['#weight'] = 1000;
     }
 
 
-    $parent = cu_campus_directory_bundle_get_parent($vars['nid']);
-    if ($parent) {
-      $vars['content']['parent']['#markup'] = 'Part of: ' . $parent;
-    }
-
-
+    $top = cu_campus_directory_bundle_get_top_group($node->nid);
   }
 
 }
 
-function cu_campus_directory_bundle_get_children($nid) {
-  // Get menu link ID.
-  $path = 'node/' . $nid;
-  $query = db_select('menu_links', 'ml');
-  $query->condition('ml.link_path', $path, '=');
-  $query->fields('ml', array('mlid'));
-  $menu_item = $query->execute()->fetchCol();
-  $mlid = current($menu_item);
-
-
-
-
-
-  // Get node ids of direct children
-  $query = db_select('menu_links', 'ml');
-  $query->condition('ml.plid', $mlid, '=');
-  $query->fields('ml', array('link_path'));
-  $children = $query->execute()->fetchCol();
+function cu_campus_directory_bundle_get_members($nid) {
+  $query = db_select('og_membership', 'ogm');
+  $query->condition('ogm.gid', $nid, '=');
+  $query->condition('ogm.entity_type', 'node', '=');
+  $query->fields('ogm', array('etid'));
+  $members = $query->execute()->fetchCol();
 
   $nodes = array();
-  foreach ($children as $child) {
-    $nid = substr($child,5);
-
+  foreach ($members as $nid) {
     $node = node_load($nid);
     $node_view = node_view($node, 'teaser');
-    $nodes[$nid]['data'] = l($node->title, 'node/' . $node->nid);
+    $nodes[$nid]['data'] = render($node_view);
   }
   return $nodes;
-}
-
-
-function cu_campus_directory_bundle_get_parent($nid) {
-  // Get menu link ID.
-  $path = 'node/' . $nid;
-  $query = db_select('menu_links', 'ml');
-  $query->condition('ml.link_path', $path, '=');
-  $query->fields('ml', array('plid'));
-  $menu_item = $query->execute()->fetchCol();
-  $plid = current($menu_item);
-  if ($plid) {
-    // Get node ids of direct children
-    $query = db_select('menu_links', 'ml');
-    $query->condition('ml.mlid', $plid, '=');
-    $query->fields('ml', array('link_path', 'link_title'));
-    $parent = $query->execute()->fetchAll();
-
-    $parent = current($parent);
-
-    return l($parent->link_title, $parent->link_path);
-  }
-  else {
-    return NULL;
-  }
 }
 
 function cu_campus_directory_bundle_contact_types() {
@@ -100,9 +69,37 @@ function cu_campus_directory_bundle_unit_types() {
 
 function cu_campus_directory_bundle_node_update($node) {
   if ($node->type == 'directory_listing') {
-    dpm('this is a directory listing');
-    dpm($node);
-    $mlid = $node->menu['mlid'];
+    $nid = $node->nid;
+    $top_group = cu_campus_directory_bundle_get_top_group($nid);
+    if (isset($top_group) && $top_group != $nid) {
+      $top_node = node_load($top_group);
+      $prefix = $top_node->field_directory_acronym[LANGUAGE_NONE][0]['value'];
+      $prefix = strtolower($prefix);
+      //$node->path['alias'] = 'xxx';
+      $path = $node->path;
+      module_load_include('inc', 'pathauto', 'pathauto');
+      $title = $node->title;
+      $node->path['alias'] = $prefix . '/' . pathauto_cleanstring($title);
+      $node->path['pathauto'] = 0;
+    }
+  }
+}
+
+function cu_campus_directory_bundle_node_insert($node) {
+  if ($node->type == 'directory_listing') {
+    $nid = $node->nid;
+    $top_group = cu_campus_directory_bundle_get_top_group($nid);
+    if (isset($top_group) && $top_group != $nid) {
+      $top_node = node_load($top_group);
+      $prefix = $top_node->field_directory_acronym[LANGUAGE_NONE][0]['value'];
+      $prefix = strtolower($prefix);
+      //$node->path['alias'] = 'xxx';
+      $path = $node->path;
+      module_load_include('inc', 'pathauto', 'pathauto');
+      $title = $node->title;
+      $node->path['alias'] = $prefix . '/' . pathauto_cleanstring($title);
+      $node->path['pathauto'] = 0;
+    }
   }
 }
 
@@ -129,11 +126,6 @@ function cu_campus_directory_bundle_secure_permissions($role) {
       'delete own directory_listing content',
       'edit any directory_listing content',
       'edit own directory_listing content',
-      'create directory_group content',
-      'delete any directory_group content',
-      'delete own directory_group content',
-      'edit any directory_group content',
-      'edit own directory_group content',
     ),
     'edit_my_content' => array(
     ),
@@ -149,4 +141,40 @@ function cu_campus_directory_bundle_secure_permissions($role) {
   if (isset($permissions[$role])) {
     return $permissions[$role];
   }
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ *
+ * Let Drupal know that we've got bean--articles.tpl.php in our module
+ * directory.
+ */
+function cu_campus_directory_bundle_theme_registry_alter(&$theme_registry) {
+  $module_path = drupal_get_path('module', 'cu_campus_directory_bundle');
+  $theme_registry_copy = $theme_registry;
+  _theme_process_registry($theme_registry_copy, 'phptemplate', 'theme_engine', 'node', $module_path);
+  $theme_registry += array_diff_key($theme_registry_copy, $theme_registry);
+  $hooks = array('node');
+  foreach ($hooks as $h) {
+	  if (isset($theme_registry[$h]['theme paths'])) {
+	    $first_element = array_shift($theme_registry[$h]['theme paths']);
+	    array_unshift($theme_registry[$h]['theme paths'], array_shift($theme_registry[$h]['theme paths']), $module_path);
+  	}
+  }
+}
+
+function cu_campus_directory_bundle_get_top_group($id) {
+  $query = db_select('og_membership', 'ogm');
+  $query->condition('ogm.etid', $id, '=');
+  $query->condition('ogm.entity_type', 'node', '=');
+  $query->fields('ogm', array('gid'));
+  $groups = $query->execute()->fetchCol();
+  if (!empty($groups)) {
+    $id = current($groups);
+    $id = cu_campus_directory_bundle_get_top_group($id);
+    if (!empty($groups)) {
+      //$id = current($groups);
+    }
+  }
+  return $id;
 }

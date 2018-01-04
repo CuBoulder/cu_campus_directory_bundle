@@ -244,6 +244,35 @@ function cu_campus_directory_bundle_field_default_field_bases() {
     'type' => 'email',
   );
 
+  // Exported field_base: 'field_directory_map_url'.
+  $field_bases['field_directory_map_url'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_directory_map_url',
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'link',
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'rel' => '',
+        'target' => 'default',
+      ),
+      'display' => array(
+        'url_cutoff' => 80,
+      ),
+      'enable_tokens' => 1,
+      'title' => 'optional',
+      'title_maxlength' => 128,
+      'title_value' => '',
+      'url' => 0,
+    ),
+    'translatable' => 0,
+    'type' => 'link_field',
+  );
+
   // Exported field_base: 'field_directory_phone'.
   $field_bases['field_directory_phone'] = array(
     'active' => 1,
@@ -385,6 +414,55 @@ function cu_campus_directory_bundle_field_default_field_bases() {
     'target_type' => 'node',
     'translatable' => 0,
     'type' => 'entityreference',
+  );
+
+  // Exported field_base: 'og_user_inheritance'.
+  $field_bases['og_user_inheritance'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'og_user_inheritance',
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'no_ui' => TRUE,
+    'settings' => array(
+      'allowed_values' => array(
+        0 => 'No - subgroups of this group won\'t inherit its users.',
+        1 => 'Yes - subgroups of this group will inherit its users.',
+      ),
+      'allowed_values_function' => '',
+    ),
+    'translatable' => 0,
+    'type' => 'list_boolean',
+  );
+
+  // Exported field_base: 'og_user_permission_inheritance'.
+  $field_bases['og_user_permission_inheritance'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'og_user_permission_inheritance',
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'no_ui' => TRUE,
+    'settings' => array(
+      'allowed_values' => array(),
+      'allowed_values_function' => 'og_subgroups_og_user_inhertiance_permission_allowed_values',
+    ),
+    'translatable' => 0,
+    'type' => 'list_boolean',
   );
 
   return $field_bases;

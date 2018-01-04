@@ -1,0 +1,78 @@
+.directory-contact-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin:0 -10px 20px;
+  overflow: hidden;
+  & > .directory-contact-item {
+    padding:3px 10px;
+    margin:0 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border:1px solid #e7e7e7;
+    small {
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+  }
+}
+.directory-additional-contacts {
+  margin-bottom: 20px;
+  h3 {
+    font-size: 110%;
+  }
+  ul.directory-additional-contacts-list {
+    &,
+    & li {
+      list-style:none;
+      list-style-image: none;
+      margin:0;
+      padding:0;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+@media screen and (min-width:768px) {
+  .directory-location {
+    float: right;
+    width:33.3333%;
+    margin:0 0 20px 40px;
+  }
+}
+.directory-members {
+  overflow: hidden;
+  .item-list > ul,
+  .item-list > ul > li {
+    list-style: none;
+    list-style-image: none;
+  }
+  .item-list > ul > li {
+    margin: 0 0 20px 0;
+    padding: 10px;
+    border:1px solid #e7e7e7;
+  }
+  .directory-contact-wrapper {
+    margin-bottom: 0;
+  }
+}
+.directory-listing-teaser .directory-title {
+  font-size: 110%;
+}
+
+.directory-parent {
+  font-size: 75%;
+  a {
+    text-transform: uppercase;
+  }
+  margin-bottom: 20px;
+}
+
+.directory-map {
+  height:300px;
+  width:100%;
+}
