@@ -799,7 +799,7 @@ function cu_campus_directory_bundle_field_default_field_instances() {
         'og_hide' => 0,
       ),
       'type' => 'options_onoff',
-      'weight' => 0,
+      'weight' => 3,
     ),
   );
 
@@ -860,7 +860,7 @@ function cu_campus_directory_bundle_field_default_field_instances() {
       'module' => 'og',
       'settings' => array(),
       'type' => 'og_complex',
-      'weight' => 19,
+      'weight' => 4,
     ),
   );
 
@@ -910,7 +910,7 @@ function cu_campus_directory_bundle_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_buttons',
-      'weight' => 20,
+      'weight' => 5,
     ),
     'widget_type' => 'options_select',
   );
@@ -962,7 +962,7 @@ function cu_campus_directory_bundle_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_buttons',
-      'weight' => 21,
+      'weight' => 6,
     ),
     'widget_type' => 'options_select',
   );

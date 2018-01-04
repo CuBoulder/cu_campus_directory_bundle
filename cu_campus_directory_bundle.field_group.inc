@@ -54,7 +54,7 @@ function cu_campus_directory_bundle_field_group_info() {
   $field_group->parent_name = 'group_directory_content';
   $field_group->data = array(
     'label' => 'Contact',
-    'weight' => '14',
+    'weight' => '10',
     'children' => array(
       0 => 'field_directory_email',
       1 => 'field_directory_phone',
@@ -84,7 +84,7 @@ function cu_campus_directory_bundle_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Content',
-    'weight' => '9',
+    'weight' => '7',
     'children' => array(
       0 => 'group_directory_location',
       1 => 'group_directory_contact',
@@ -113,7 +113,7 @@ function cu_campus_directory_bundle_field_group_info() {
   $field_group->parent_name = 'group_directory_content';
   $field_group->data = array(
     'label' => 'Location',
-    'weight' => '15',
+    'weight' => '11',
     'children' => array(
       0 => 'field_directory_building_name',
       1 => 'field_directory_address_2',
@@ -144,7 +144,7 @@ function cu_campus_directory_bundle_field_group_info() {
   $field_group->parent_name = 'group_directory_content';
   $field_group->data = array(
     'label' => 'Summary',
-    'weight' => '13',
+    'weight' => '9',
     'children' => array(
       0 => 'body',
       1 => 'field_directory_acronym',
@@ -172,7 +172,7 @@ function cu_campus_directory_bundle_field_group_info() {
   $field_group->parent_name = 'group_directory_content';
   $field_group->data = array(
     'label' => 'Type',
-    'weight' => '12',
+    'weight' => '8',
     'children' => array(
       0 => 'field_directory_type',
     ),
