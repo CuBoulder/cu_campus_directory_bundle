@@ -91,7 +91,7 @@ function cu_campus_directory_bundle_node_update($node) {
     if (isset($top_group) && $top_group != $nid) {
       $top_node = node_load($top_group);
       $prefix = $top_node->field_directory_acronym[LANGUAGE_NONE][0]['value'];
-      $prefix = strtolower($prefix);
+      $prefix = 'listing/' . strtolower($prefix);
       //$node->path['alias'] = 'xxx';
       $path = $node->path;
       module_load_include('inc', 'pathauto', 'pathauto');
@@ -114,7 +114,7 @@ function cu_campus_directory_bundle_node_insert($node) {
     if (isset($top_group) && $top_group != $nid) {
       $top_node = node_load($top_group);
       $prefix = $top_node->field_directory_acronym[LANGUAGE_NONE][0]['value'];
-      $prefix = strtolower($prefix);
+      $prefix = 'listing/' . strtolower($prefix);
       //$node->path['alias'] = 'xxx';
       $path = $node->path;
       module_load_include('inc', 'pathauto', 'pathauto');
@@ -156,11 +156,6 @@ function cu_campus_directory_bundle_secure_permissions($role) {
     'edit_my_content' => array(
     ),
     'site_owner' => array(
-      'create directory_listing content',
-      'delete any directory_listing content',
-      'delete own directory_listing content',
-      'edit any directory_listing content',
-      'edit own directory_listing content',
     ),
   );
 
@@ -247,4 +242,69 @@ function cu_campus_directory_bundle_form_node_form_alter(&$form, &$form_state, $
       }
     }
   }
+}
+
+function cu_campus_directory_bundle_menu() {
+  $items['directory-autocomplete'] = array(
+    'access callback' => TRUE,
+    'page callback' => 'cu_campus_directory_bundle_autocomplete',
+    'title' => 'Directory Autocomplete',
+    'type' => MENU_CALLBACK
+  );
+
+  $items['directory-search'] = array(
+    'access callback' => TRUE,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cu_campus_directory_bundle_autocomplete_form'),
+    'title' => 'Directory search'
+  );
+
+  return $items;
+}
+
+function cu_campus_directory_bundle_autocomplete($string) {
+  $matches = array();
+  $result = db_select('node', 'n')
+    ->condition('n.type', 'directory_listing', '=')
+    ->condition('n.status', 1, '=')
+    ->fields('n', array('nid', 'title'))
+    ->condition('n.title', '%' . db_like($string) . '%', 'LIKE')
+    ->range(0, 10)
+    ->execute();
+
+  // save the query to matches
+  foreach ($result as $row) {
+    $matches[$row->title] = check_plain($row->title);
+  }
+
+  // Return the result to the form in json
+  drupal_json_output($matches);
+}
+
+function cu_campus_directory_bundle_autocomplete_form($form, &$form_state) {
+  $form = array();
+  $form['directory-search'] = array(
+    '#prefix' => '<div id="directory-search">',
+    '#suffix' => '</div>',
+  );
+  $form['directory-search']['cse'] = array(
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'directory-autocomplete',
+    '#prefix' => '<div class="directory-search-element">',
+    '#suffix' => '</div>',
+    '#attributes' => array(
+      'placeholder' => variable_get('cu_campus_directory_placeholder_phrase', 'Search the CU Boulder Directory'),
+    ),
+
+  );
+  $form['directory-search']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Search',
+    '#prefix' => '<div class="directory-search-element">',
+    '#suffix' => '</div>',
+  );
+  $form['#action'] = 'search';
+  $form['#method'] = 'get';
+
+  return $form;
 }
