@@ -1,11 +1,12 @@
-.directory-contact-wrapper { display: flex; flex-direction: row; align-items: stretch; margin: 0 -10px 20px; overflow: hidden; }
-.directory-contact-wrapper > .directory-contact-item { padding: 3px 10px; margin: 0 10px; display: flex; flex-direction: row; align-items: center; border: 1px solid #e7e7e7; }
-.directory-contact-wrapper > .directory-contact-item small { font-weight: bold; text-transform: uppercase; font-size: 11px; }
+ul.directory-contact-list { display: flex; flex-direction: row; align-items: stretch; margin: 0 -10px 20px; padding: 0; overflow: hidden; }
+.directory-contact-wrapper ul.directory-contact-list { margin: 0 -10px 20px; }
+ul.directory-contact-list > .directory-contact-item { padding: 3px 10px; margin: 0 10px; display: flex; flex-direction: row; align-items: center; border: 1px solid #e7e7e7; }
+ul.directory-contact-list > .directory-contact-item small { font-weight: bold; text-transform: uppercase; font-size: 11px; }
 
 .directory-additional-contacts { margin-bottom: 20px; }
 .directory-additional-contacts h3 { font-size: 110%; }
-.directory-additional-contacts ul.directory-additional-contacts-list, .directory-additional-contacts ul.directory-additional-contacts-list li { list-style: none; list-style-image: none; margin: 0; padding: 0; }
-.directory-additional-contacts ul.directory-additional-contacts-list li { margin-bottom: 10px; }
+.directory-additional-contacts ul.directory-additional-contacts-list, .directory-additional-contacts ul.directory-additional-contacts-list > li { list-style: none; list-style-image: none; margin: 0; padding: 0; }
+.directory-additional-contacts ul.directory-additional-contacts-list > li { margin-bottom: 10px; }
 
 @media screen and (min-width: 768px) { .directory-location { float: right; width: 33.3333%; margin: 0 0 20px 40px; } }
 .directory-members { overflow: hidden; }
@@ -19,3 +20,8 @@
 .directory-parent a { text-transform: uppercase; }
 
 .directory-map { height: 300px; width: 100%; }
+
+#cu-campus-directory-bundle-autocomplete-form #edit-cse { background-image: none; }
+
+#cu-campus-directory-bundle-autocomplete-form #directory-search { display: flex; flex-direction: row; align-items: center; margin: 0 -10px; }
+#cu-campus-directory-bundle-autocomplete-form #directory-search > * { padding: 0 10px; }

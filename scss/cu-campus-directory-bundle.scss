@@ -1,8 +1,12 @@
-.directory-contact-wrapper {
+ul.directory-contact-list {
   display: flex;
   flex-direction: row;
   align-items: stretch;
   margin:0 -10px 20px;
+  .directory-contact-wrapper & {
+    margin:0 -10px 20px;
+  }
+  padding:0;
   overflow: hidden;
   & > .directory-contact-item {
     padding:3px 10px;
@@ -25,13 +29,13 @@
   }
   ul.directory-additional-contacts-list {
     &,
-    & li {
+    & > li {
       list-style:none;
       list-style-image: none;
       margin:0;
       padding:0;
     }
-    li {
+    & > li {
       margin-bottom: 10px;
     }
   }
@@ -75,4 +79,18 @@
 .directory-map {
   height:300px;
   width:100%;
+}
+
+#cu-campus-directory-bundle-autocomplete-form #edit-cse {
+  background-image: none;
+}
+
+#cu-campus-directory-bundle-autocomplete-form #directory-search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 -10px;
+  & > * {
+    padding: 0 10px;
+  }
 }
