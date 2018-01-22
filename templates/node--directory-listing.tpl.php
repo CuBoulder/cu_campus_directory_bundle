@@ -25,7 +25,7 @@
 
 <?php if (!empty($content['field_directory_phone']) || !empty($content['field_directory_email']) || !empty($content['field_directory_website'])): ?>
 <h2 class="directory-header">Contact Information</h2>
-<div class="directory-contact-wrapper">
+<div class="directory-contact-wrapper directory-section">
   <ul class="directory-contact-list">
   <?php if (!empty($content['field_directory_phone'])): ?>
     <li class="directory-contact-item directory-contact-phone">
@@ -72,7 +72,7 @@
 <?php endif; ?>
 
 <?php if (!empty($content['field_directory_contact'])): ?>
-  <div class="directory-additional-contacts">
+  <div class="directory-additional-contacts  directory-section">
     <h3 class="directory-header">Additional Contacts</h3>
     <ul class="directory-additional-contacts-list">
       <?php print render($content['field_directory_contact']); ?>
@@ -82,7 +82,7 @@
 
 
 <?php if (!empty($content['members'])): ?>
-<div class="directory-members">
+<div class="directory-members  directory-section">
   <h2 class="directory-header">Departments under <?php print render($title); ?></h2>
   <?php print render($content['members']); ?>
 </div>

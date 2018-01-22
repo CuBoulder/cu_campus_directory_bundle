@@ -1,3 +1,5 @@
+.directory-section { overflow: hidden; }
+
 ul.directory-contact-list { display: flex; flex-direction: row; align-items: stretch; margin: 0 -10px 20px; padding: 0; overflow: hidden; }
 .directory-contact-wrapper ul.directory-contact-list { margin: 0 -10px 20px; }
 ul.directory-contact-list > .directory-contact-item { padding: 3px 10px; margin: 0 10px; display: flex; flex-direction: row; align-items: center; border: 1px solid #e7e7e7; }
