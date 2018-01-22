@@ -87,7 +87,6 @@ function cu_campus_directory_bundle_unit_types() {
 function cu_campus_directory_bundle_node_update($node) {
   if ($node->type == 'directory_listing') {
     $nid = $node->nid;
-    dpm($node);
     $top_group = cu_campus_directory_bundle_get_top_group($nid);
     if (isset($top_group) && $top_group != $nid) {
       $top_node = node_load($top_group);
