@@ -4,7 +4,6 @@ ul.directory-contact-list > .directory-contact-item { padding: 3px 10px; margin:
 ul.directory-contact-list > .directory-contact-item small { font-weight: bold; text-transform: uppercase; font-size: 11px; }
 
 .directory-additional-contacts { margin-bottom: 20px; }
-.directory-additional-contacts h3 { font-size: 110%; }
 .directory-additional-contacts ul.directory-additional-contacts-list, .directory-additional-contacts ul.directory-additional-contacts-list > li { list-style: none; list-style-image: none; margin: 0; padding: 0; }
 .directory-additional-contacts ul.directory-additional-contacts-list > li { margin-bottom: 10px; }
 
@@ -19,9 +18,22 @@ ul.directory-contact-list > .directory-contact-item small { font-weight: bold; t
 .directory-parent { font-size: 75%; margin-bottom: 20px; }
 .directory-parent a { text-transform: uppercase; }
 
-.directory-map { height: 300px; width: 100%; }
+.directory-map { height: 320px; width: 100%; }
+
+.directory-social-links, .directory-social-links li { list-style: none; list-style-image: none; margin: 0; padding: 0; }
+.directory-social-links li { display: inline-block; margin-right: 10px; }
+.directory-social-links li:last-child { margin-right: 0; }
 
 #cu-campus-directory-bundle-autocomplete-form #edit-cse { background-image: none; }
 
-#cu-campus-directory-bundle-autocomplete-form #directory-search { display: flex; flex-direction: row; align-items: center; margin: 0 -10px; }
-#cu-campus-directory-bundle-autocomplete-form #directory-search > * { padding: 0 10px; }
+.directory-search-wrapper .fieldset-wrapper { display: flex; flex-direction: row; align-items: center; margin: 0 -10px; }
+.directory-search-wrapper .fieldset-wrapper > * { padding: 0 10px; }
+.directory-search-wrapper .fieldset-wrapper .form-autocomplete { background-image: none; }
+
+.directory-task-results .directory-listing-teaser { border-bottom: 1px solid #e7e7e7; margin-bottom: 20px; }
+
+.directory-research-search-form { font-size: 85%; }
+
+h2.directory-header { font-size: 150%; }
+
+h3.directory-header { font-size: 110%; }

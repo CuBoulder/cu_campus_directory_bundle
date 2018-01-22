@@ -87,6 +87,7 @@ function cu_campus_directory_bundle_unit_types() {
 function cu_campus_directory_bundle_node_update($node) {
   if ($node->type == 'directory_listing') {
     $nid = $node->nid;
+    dpm($node);
     $top_group = cu_campus_directory_bundle_get_top_group($nid);
     if (isset($top_group) && $top_group != $nid) {
       $top_node = node_load($top_group);
@@ -152,6 +153,7 @@ function cu_campus_directory_bundle_secure_permissions($role) {
       'edit any directory_listing content',
       'edit own directory_listing content',
       'edit group hierarchy',
+      'administer organic groups',
     ),
     'edit_my_content' => array(
     ),
@@ -230,6 +232,7 @@ function cu_campus_directory_bundle_form_node_form_alter(&$form, &$form_state, $
       foreach ($hide_group_fields as $field) {
         $form[$field]['#access'] = FALSE;
       }
+      $form['field_directory_tasks']['#access'] = FALSE;
     }
     else {
       $form['directory_group'] = array(
@@ -240,6 +243,13 @@ function cu_campus_directory_bundle_form_node_form_alter(&$form, &$form_state, $
         $form['directory_group'][$field] = $form[$field];
         unset($form[$field]);
       }
+      $form['directory_tasks'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Directory Listing Tasks',
+      );
+      $tasks = $form['field_directory_tasks'];
+      $form['directory_tasks']['field_directory_tasks'] = $tasks;
+      unset($form['field_directory_tasks']);
     }
   }
 }
@@ -247,14 +257,35 @@ function cu_campus_directory_bundle_form_node_form_alter(&$form, &$form_state, $
 function cu_campus_directory_bundle_menu() {
   $items['directory-autocomplete'] = array(
     'access callback' => TRUE,
-    'page callback' => 'cu_campus_directory_bundle_autocomplete',
+    'page callback' => 'cu_campus_directory_search_autocomplete',
     'title' => 'Directory Autocomplete',
+    'type' => MENU_CALLBACK
+  );
+
+  $items['directory-tasks-autocomplete'] = array(
+    'access callback' => TRUE,
+    'page callback' => 'cu_campus_directory_tasks_autocomplete',
+    'title' => 'Directory Tasks Autocomplete',
+    'type' => MENU_CALLBACK
+  );
+
+  $items['tasks/results'] = array(
+    'access callback' => TRUE,
+    'page callback' => 'cu_campus_directory_tasks_results',
+    'title' => 'Directory Search Reults',
+    'type' => MENU_CALLBACK
+  );
+  $items['tasks/results/%'] = array(
+    'access callback' => TRUE,
+    'page callback' => 'cu_campus_directory_tasks_results',
+    'page arguments' => array(2),
+    'title' => 'Directory Search Reults',
     'type' => MENU_CALLBACK
   );
 
   $items['directory-search'] = array(
     'access callback' => TRUE,
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'cu_campus_directory_bundle_search_page',
     'page arguments' => array('cu_campus_directory_bundle_autocomplete_form'),
     'title' => 'Directory search'
   );
@@ -262,7 +293,80 @@ function cu_campus_directory_bundle_menu() {
   return $items;
 }
 
-function cu_campus_directory_bundle_autocomplete($string) {
+function cu_campus_directory_tasks_results($task = NULL) {
+  $output = array();
+
+  $task = check_plain(urldecode($task));
+  $vocab = taxonomy_vocabulary_machine_name_load('directory_tasks');
+  $vid = $vocab->vid;
+  $query = db_select('taxonomy_term_data', 'ttd');
+  $query->condition('ttd.vid', $vid, '=');
+  $query->fields('ttd', array('tid', 'name'));
+  $query->condition('ttd.name', '%' . db_like($task) . '%', 'LIKE');
+  $query->join('taxonomy_index', 'ti', 'ti.tid = ttd.tid');
+  $query->fields('ti', array('nid', 'tid'));
+  $query->join('node', 'n', 'n.nid = ti.nid');
+  $query->fields('n', array('nid', 'title', 'status'));
+  $query->condition('n.status', 1, '=');
+  $query->orderBy('n.title', 'ASC');
+  $results = $query->execute()->fetchAll();
+
+  if (empty($results)) {
+    $output['no_results']['#markup'] = 'Your directory search has no results.';
+  }
+  elseif (count($results) > 1) {
+
+    $output['search']['text_search'] = drupal_get_form('cu_campus_directory_bundle_text_search_form');
+    $output['search']['task_search'] = drupal_get_form('cu_campus_directory_bundle_task_search_form');
+    $output['search']['#prefix'] = '<div class="directory-research-search-form">';
+    $output['search']['#suffix'] = '</div>';
+
+
+
+    $nids = array();
+    foreach ($results as $result) {
+      $nids[]= $result->nid;
+    }
+    $nodes = node_load_multiple($nids);
+    $output['listings'] = node_view_multiple($nodes, 'teaser');
+    $output['listings']['#prefix'] = '<div class="directory-task-results">';
+    $output['listings']['#suffix'] = '</div>';
+
+  }
+  else {
+    $result = $results[0]->nid;
+    drupal_goto('node/' . $result);
+  }
+
+
+  return $output;
+}
+
+function cu_campus_directory_tasks_autocomplete($string) {
+  $string = check_plain($string);
+  $vocab = taxonomy_vocabulary_machine_name_load('directory_tasks');
+  $vid = $vocab->vid;
+  $matches = array();
+  $result = db_select('taxonomy_term_data', 'ttd')
+    ->condition('ttd.vid', $vid, '=')
+    ->fields('ttd', array('tid', 'name'))
+    ->condition('ttd.name', '%' . db_like($string) . '%', 'LIKE')
+
+
+
+    ->range(0, 10)
+    ->execute();
+
+  // save the query to matches
+  foreach ($result as $row) {
+    $matches[$row->name] = check_plain($row->name);
+  }
+
+  // Return the result to the form in json
+  drupal_json_output($matches);
+}
+
+function cu_campus_directory_search_autocomplete($string) {
   $matches = array();
   $result = db_select('node', 'n')
     ->condition('n.type', 'directory_listing', '=')
@@ -281,11 +385,13 @@ function cu_campus_directory_bundle_autocomplete($string) {
   drupal_json_output($matches);
 }
 
-function cu_campus_directory_bundle_autocomplete_form($form, &$form_state) {
+function cu_campus_directory_bundle_text_search_form($form, &$form_state) {
   $form = array();
   $form['directory-search'] = array(
-    '#prefix' => '<div id="directory-search">',
+    '#prefix' => '<div id="directory-task-search" class="directory-search-wrapper">',
     '#suffix' => '</div>',
+    '#type' => 'fieldset',
+    '#title' => 'Search the Campus Directory',
   );
   $form['directory-search']['cse'] = array(
     '#type' => 'textfield',
@@ -297,14 +403,70 @@ function cu_campus_directory_bundle_autocomplete_form($form, &$form_state) {
     ),
 
   );
+
   $form['directory-search']['submit'] = array(
     '#type' => 'submit',
     '#value' => 'Search',
     '#prefix' => '<div class="directory-search-element">',
     '#suffix' => '</div>',
   );
+
+
+
+
   $form['#action'] = 'search';
   $form['#method'] = 'get';
 
   return $form;
+}
+
+function cu_campus_directory_bundle_task_search_form($form, &$form_state) {
+  $form = array();
+
+
+
+  $form['directory-tasks'] = array(
+    '#prefix' => '<div id="directory-text-search" class="directory-search-wrapper">',
+    '#suffix' => '</div>',
+    '#type' => 'fieldset',
+    '#title' => 'Search by Task',
+  );
+
+  $form['directory-tasks']['tasks'] = array(
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'directory-tasks-autocomplete',
+    '#prefix' => '<div class="directory-search-element">',
+    '#suffix' => '</div>',
+    '#attributes' => array(
+      'placeholder' => variable_get('cu_campus_directory_placeholder_phrase', 'I want to...'),
+    ),
+
+  );
+  if (arg(2)) {
+    $form['directory-tasks']['tasks']['#value'] = check_plain(urldecode(arg(2)));
+  }
+  $form['directory-tasks']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Search',
+    '#prefix' => '<div class="directory-search-element">',
+    '#suffix' => '</div>',
+  );
+
+
+  $form['#submit'][] = 'cu_directory_search_tasks';
+
+  return $form;
+}
+
+function cu_directory_search_tasks($form, &$form_state) {
+  $query = strtolower($form_state['values']['tasks']);
+  drupal_goto('tasks/results/' . urlencode($query));
+}
+
+function cu_campus_directory_bundle_search_page() {
+  $output = array();
+  $output['text_search'] = drupal_get_form('cu_campus_directory_bundle_text_search_form');
+  $output['task_search'] = drupal_get_form('cu_campus_directory_bundle_task_search_form');
+
+  return $output;
 }

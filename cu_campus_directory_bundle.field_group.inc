@@ -90,6 +90,7 @@ function cu_campus_directory_bundle_field_group_info() {
       1 => 'group_directory_contact',
       2 => 'group_directory_summary',
       3 => 'group_directory_type',
+      4 => 'group_directory_social',
     ),
     'format_type' => 'htabs',
     'format_settings' => array(
@@ -113,7 +114,7 @@ function cu_campus_directory_bundle_field_group_info() {
   $field_group->parent_name = 'group_directory_content';
   $field_group->data = array(
     'label' => 'Location',
-    'weight' => '11',
+    'weight' => '12',
     'children' => array(
       0 => 'field_directory_building_name',
       1 => 'field_directory_address_2',
@@ -132,6 +133,35 @@ function cu_campus_directory_bundle_field_group_info() {
     ),
   );
   $field_groups['group_directory_location|node|directory_listing|form'] = $field_group;
+
+  $field_group = new stdClass();
+  $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
+  $field_group->api_version = 1;
+  $field_group->identifier = 'group_directory_social|node|directory_listing|form';
+  $field_group->group_name = 'group_directory_social';
+  $field_group->entity_type = 'node';
+  $field_group->bundle = 'directory_listing';
+  $field_group->mode = 'form';
+  $field_group->parent_name = 'group_directory_content';
+  $field_group->data = array(
+    'label' => 'Social Media',
+    'weight' => '11',
+    'children' => array(
+      0 => 'field_directory_twitter',
+      1 => 'field_directory_facebook',
+      2 => 'field_directory_instagram',
+    ),
+    'format_type' => 'htab',
+    'format_settings' => array(
+      'formatter' => 'closed',
+      'instance_settings' => array(
+        'description' => '',
+        'classes' => '',
+        'required_fields' => 1,
+      ),
+    ),
+  );
+  $field_groups['group_directory_social|node|directory_listing|form'] = $field_group;
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -194,6 +224,7 @@ function cu_campus_directory_bundle_field_group_info() {
   t('Contact');
   t('Content');
   t('Location');
+  t('Social Media');
   t('Summary');
   t('Type');
 

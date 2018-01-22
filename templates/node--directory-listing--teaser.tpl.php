@@ -25,6 +25,28 @@
          <a href="<?php print render($content['field_directory_website']);?>"><span><i class="fa fa-laptop"></i> Website</span></a>
       </li>
     <?php endif; ?>
+    <?php if (!empty($content['field_directory_twitter']) || !empty($content['field_directory_facebook']) || !empty($content['field_directory_instagram'])): ?>
+    <li class="directory-contact-item directory-contact-social">
+      <span class="element-invisible">Social Media</span>
+      <ul class="directory-social-links">
+        <?php if (!empty($content['field_directory_twitter'])): ?>
+          <li>
+            <a href="<?php print render($content['field_directory_twitter']);?>"><i class="fa fa-twitter"></i> <span class="element-invisible">Twitter</span></a>
+          </li>
+        <?php endif; ?>
+        <?php if (!empty($content['field_directory_facebook'])): ?>
+          <li>
+            <a href="<?php print render($content['field_directory_facebook']);?>"><i class="fa fa-facebook"></i> <span class="element-invisible">Facebook</span></a>
+          </li>
+        <?php endif; ?>
+        <?php if (!empty($content['field_directory_instagram'])): ?>
+          <li>
+            <a href="<?php print render($content['field_directory_instagram']);?>"><i class="fa fa-instagram"></i> <span class="element-invisible">Instagram</span></a>
+          </li>
+        <?php endif; ?>
+      </ul>
+    </li>
+    <?php endif; ?>
     </ul>
   </div>
   <?php endif; ?>

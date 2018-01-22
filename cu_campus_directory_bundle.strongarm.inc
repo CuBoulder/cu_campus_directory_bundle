@@ -13,6 +13,27 @@ function cu_campus_directory_bundle_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'diff_enable_revisions_page_node_directory_listing';
+  $strongarm->value = 1;
+  $export['diff_enable_revisions_page_node_directory_listing'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'diff_show_preview_changes_node_directory_listing';
+  $strongarm->value = 1;
+  $export['diff_show_preview_changes_node_directory_listing'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'diff_view_mode_preview_node_directory_listing';
+  $strongarm->value = 'full';
+  $export['diff_view_mode_preview_node_directory_listing'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'field_bundle_settings_node__directory_listing';
   $strongarm->value = array(
     'view_modes' => array(
@@ -117,7 +138,7 @@ function cu_campus_directory_bundle_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'pathauto_node_directory_listing_pattern';
-  $strongarm->value = '[node:title]';
+  $strongarm->value = 'listing/[node:title]';
   $export['pathauto_node_directory_listing_pattern'] = $strongarm;
 
   $strongarm = new stdClass();

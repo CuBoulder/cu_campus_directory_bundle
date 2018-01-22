@@ -24,9 +24,7 @@ ul.directory-contact-list {
 }
 .directory-additional-contacts {
   margin-bottom: 20px;
-  h3 {
-    font-size: 110%;
-  }
+
   ul.directory-additional-contacts-list {
     &,
     & > li {
@@ -77,15 +75,32 @@ ul.directory-contact-list {
 }
 
 .directory-map {
-  height:300px;
+  height:320px;
   width:100%;
+}
+
+.directory-social-links {
+  &,
+  & li {
+    list-style: none;
+    list-style-image: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  li:last-child {
+    margin-right: 0;
+  }
 }
 
 #cu-campus-directory-bundle-autocomplete-form #edit-cse {
   background-image: none;
 }
 
-#cu-campus-directory-bundle-autocomplete-form #directory-search {
+.directory-search-wrapper .fieldset-wrapper {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -93,4 +108,22 @@ ul.directory-contact-list {
   & > * {
     padding: 0 10px;
   }
+  .form-autocomplete {
+    background-image: none;
+  }
+}
+.directory-task-results .directory-listing-teaser {
+  border-bottom: 1px solid #e7e7e7;
+  margin-bottom: 20px;
+  //padding-bottom: 20px;
+}
+.directory-research-search-form {
+  font-size: 85%;
+}
+
+h2.directory-header {
+  font-size: 150%;
+}
+h3.directory-header {
+  font-size: 110%;
 }
