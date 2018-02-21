@@ -179,6 +179,15 @@ function cu_campus_directory_bundle_node_insert($node) {
 }
 
 /**
+ * Adding campus communicator role.
+ */
+function cu_campus_directory_bundle_secure_permissions_roles() {
+  return array(
+    'campus_communicator'
+  );
+}
+
+/**
  * Implements hook_secure_permissions.
  */
 function cu_campus_directory_bundle_secure_permissions($role) {
@@ -190,6 +199,7 @@ function cu_campus_directory_bundle_secure_permissions($role) {
       'edit any directory_listing content',
       'edit own directory_listing content',
       'edit group hierarchy',
+      'administer group',
     ),
     'anonymous user' => array(
     ),
@@ -205,11 +215,15 @@ function cu_campus_directory_bundle_secure_permissions($role) {
       'edit any directory_listing content',
       'edit own directory_listing content',
       'edit group hierarchy',
-      'administer organic groups',
+      'administer group',
     ),
     'edit_my_content' => array(
     ),
     'site_owner' => array(
+    ),
+    'campus_communicator' => array(
+      'delete own directory_listing content',
+      'edit own directory_listing content',
     ),
   );
 
@@ -522,5 +536,3 @@ function cu_campus_directory_bundle_search_page() {
 
   return $output;
 }
-
-
