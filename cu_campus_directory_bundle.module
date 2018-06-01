@@ -6,59 +6,6 @@
 
 include_once 'cu_campus_directory_bundle.features.inc';
 
-
-/**
- * @file Secure Permissions Data
- * Module file for secure permissions in code.
- */
-
-/**
- * Define site roles in code.
- *
- *
- * @return
- *   An array defining all the roles for the site.
- */
-function cu_campus_directory_secure_permissions_roles() {
-  return array(
-    'campus_communicator'
-  );
-}
-
-/**
- * Define site permissions in code.
- *
- * Create a secure_permissions_data module directory and place this function
- * in secure_permissions_data.module.
- *
- * @param $role
- *   The role for which the permissions are being requested.
- *
- * @return
- *   An array defining all the permissions for the site.
- */
-function cu_campus_directory_secure_permissions($role) {
-  $permissions = array(
-    'developer' => array(
-      'administer group',
-      'delete any directory_listing content',
-      'edit any directory_listing content',
-    ),
-    'administrator' => array(
-      'administer group',
-      'delete any directory_listing content',
-      'edit any directory_listing content',
-    ),
-    'campus_communicator' => array(
-      'delete own directory_listing content',
-      'edit own directory_listing content',
-    ),
-  );
-  if (isset($permissions[$role])) {
-    return $permissions[$role];
-  }
-}
-
 /**
  * Implements module_preprocess_node.
  */
@@ -206,7 +153,6 @@ function cu_campus_directory_bundle_secure_permissions($role) {
     'authenticated user' => array(
     ),
     'content_editor' => array(
-
     ),
     'developer' => array(
       'create directory_listing content',
@@ -218,6 +164,10 @@ function cu_campus_directory_bundle_secure_permissions($role) {
       'administer group',
     ),
     'edit_my_content' => array(
+    ),
+    'edit_only' => array(
+    ),
+    'site_editor' => array(
     ),
     'site_owner' => array(
     ),
